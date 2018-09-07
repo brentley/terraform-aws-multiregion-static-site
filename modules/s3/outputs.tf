@@ -17,6 +17,11 @@ output "bucket_website_endpoint" {
   value       = "${local.bucket_website_endpoint}"
 }
 
+output "origin_access_identity" {
+  description = "origin access identity for cloudfront to s3 permissions"
+  value       = "${aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path}"
+}
+
 output "logging_bucket_domain_name" {
   description = "the domain name of the primary's logging bucket"
   value       = "${aws_s3_bucket.website_logging.bucket_domain_name}"

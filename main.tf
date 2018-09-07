@@ -17,6 +17,7 @@ module "s3" {
 
   # Force destroy
   force_destroy = "${var.force_destroy}"
+
 }
 
 locals {
@@ -41,6 +42,8 @@ module "cloudfront" {
   replication_bucket_website_endpoint    = "${module.s3.replication_bucket_website_endpoint}"
   logging_bucket_domain_name             = "${module.s3.logging_bucket_domain_name}"
   replication_logging_bucket_domain_name = "${module.s3.replication_logging_bucket_domain_name}"
+
+  origin_access_identity                 = "${module.s3.origin_access_identity}"
 
   # Failover
   failover = "${var.failover}"

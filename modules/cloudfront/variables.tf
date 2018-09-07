@@ -6,6 +6,11 @@ variable "domain" {
   description = "name of the domain you're creating CloudFront assets for"
 }
 
+variable "origin_access_identity" {
+  type = "string"
+  description = "origin_access_identity"
+}
+
 variable "tags" {
   type        = "map"
   description = "optional tags to attach to the created s3 resources"

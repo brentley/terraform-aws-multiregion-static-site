@@ -4,10 +4,7 @@ locals {
   replication_logging_domain_name = "${var.replication_logging_bucket_domain_name == "" ? var.logging_bucket_domain_name : var.replication_logging_bucket_domain_name}"
   logging_domain_name             = "${var.failover ? local.replication_logging_domain_name : var.logging_bucket_domain_name}"
   www_alias                       = ["${var.domain}", "www.${var.domain}"]
-}
-
-resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
-  comment = "CloudFront Origin ID"
+  origin_access_identity	  = "${var.origin_access_identity}"
 }
 
 resource "aws_cloudfront_distribution" "website-distribution" {
@@ -20,7 +17,7 @@ resource "aws_cloudfront_distribution" "website-distribution" {
     origin_id   = "s3-${var.domain}-assets"
 
     s3_origin_config {
-      origin_access_identity = "${aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path}"
+      origin_access_identity = "${local.origin_access_identity}"
     }
   }
 
