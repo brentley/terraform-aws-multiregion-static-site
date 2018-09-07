@@ -1,8 +1,11 @@
+resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
+  comment = "CloudFront Origin ID"
+}
+
 data "aws_iam_policy_document" "s3_policy" {
   statement {
     actions   = ["s3:GetObject"]
     resources = [
-      "${aws_s3_bucket.website.arn}/*",
       "${aws_s3_bucket.replicated_website.arn}/*"
     ]
 
@@ -15,7 +18,6 @@ data "aws_iam_policy_document" "s3_policy" {
   statement {
     actions   = ["s3:ListBucket"]
     resources = [
-      "${aws_s3_bucket.website.arn}",
       "${aws_s3_bucket.replicated_website.arn}"
     ]
 
@@ -27,7 +29,7 @@ data "aws_iam_policy_document" "s3_policy" {
 }
 
 resource "aws_s3_bucket_policy" "website" {
-  bucket = "${aws_s3_bucket.website.id}"
+  bucket = "${aws_s3_bucket.website_replication.id}"
   policy = "${data.aws_iam_policy_document.s3_policy.json}"
 }
 
