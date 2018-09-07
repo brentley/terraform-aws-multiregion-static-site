@@ -4,7 +4,7 @@ locals {
   replication_logging_domain_name = "${var.replication_logging_bucket_domain_name == "" ? var.logging_bucket_domain_name : var.replication_logging_bucket_domain_name}"
   logging_domain_name             = "${var.failover ? local.replication_logging_domain_name : var.logging_bucket_domain_name}"
   www_alias                       = ["${var.domain}", "www.${var.domain}"]
-  origin_access_identity	  = "${var.origin_access_identity}"
+  origin_access_identity          = "${var.origin_access_identity}"
 }
 
 resource "aws_cloudfront_distribution" "website-distribution" {
@@ -16,8 +16,16 @@ resource "aws_cloudfront_distribution" "website-distribution" {
     domain_name = "${local.website_endpoint}"
     origin_id   = "s3-${var.domain}-assets"
 
-    s3_origin_config {
-      origin_access_identity = "${local.origin_access_identity}"
+    custom_origin_config {
+      http_port                = "80"
+      https_port               = "443"
+      origin_keepalive_timeout = 5
+
+      # From https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOrigin<Paste>
+      # If your Amazon S3 bucket is configured as a website endpoint, you must specify HTTP Only. Amazon S3 doesn't support HTTPS connections in that configuration.
+      origin_protocol_policy = "http-only"
+
+      origin_ssl_protocols = ["TLSv1", "TLSv1.1", "TLSv1.2"]
     }
   }
 
