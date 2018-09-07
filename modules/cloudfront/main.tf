@@ -6,6 +6,10 @@ locals {
   www_alias                       = ["${var.domain}", "www.${var.domain}"]
 }
 
+resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
+  comment = "CloudFront Origin ID"
+}
+
 resource "aws_cloudfront_distribution" "website-distribution" {
   tags = "${var.tags}"
 
@@ -15,16 +19,8 @@ resource "aws_cloudfront_distribution" "website-distribution" {
     domain_name = "${local.website_endpoint}"
     origin_id   = "s3-${var.domain}-assets"
 
-    custom_origin_config {
-      http_port                = "80"
-      https_port               = "443"
-      origin_keepalive_timeout = 5
-
-      # From https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOrigin<Paste>
-      # If your Amazon S3 bucket is configured as a website endpoint, you must specify HTTP Only. Amazon S3 doesn't support HTTPS connections in that configuration.
-      origin_protocol_policy = "http-only"
-
-      origin_ssl_protocols = ["TLSv1", "TLSv1.1", "TLSv1.2"]
+    s3_origin_config {
+      origin_access_identity = "${aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path}"
     }
   }
 
